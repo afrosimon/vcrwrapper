@@ -4,7 +4,6 @@ import inspect
 import json
 
 import vcr
-from __future__ import print_function
 import sys
 
 def eprint(*args, **kwargs):
