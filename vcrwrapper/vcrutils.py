@@ -4,14 +4,19 @@ import inspect
 import json
 
 import vcr
+from __future__ import print_function
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def json_query_matcher(r1, r2):
     """
     Match two queries by decoding json-encoded query args and comparing them
     """
-    logging.debug('json_query_matcher')
-    print(r1.query)
-    print(r2.query)
+    eprint('json_query_matcher')
+    eprint(r1.query)
+    eprint(r2.query)
     if len(r1.query) != len(r2.query):
         return False
 
