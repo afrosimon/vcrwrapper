@@ -1,13 +1,17 @@
 from contextlib import contextmanager
+import logging
 import inspect
 import json
- 
+
 import vcr
- 
+
 def json_query_matcher(r1, r2):
     """
     Match two queries by decoding json-encoded query args and comparing them
     """
+    logging.debug('json_query_matcher')
+    print(r1.query)
+    print(r2.query)
     if len(r1.query) != len(r2.query):
         return False
 
@@ -31,14 +35,14 @@ def get_vcr(*args, **kwargs):
     """Return a VCR, with our custom matchers registered.
 
     Params are passed to VCR init."""
- 
+
     v = vcr.VCR(*args, **kwargs)
     # register custom matchers here
     v.register_matcher('json_query', json_query_matcher)
- 
+
     return v
- 
- 
+
+
 def get_filename_from_method(func, receiver):
     """Return an unambigious filename built from a test method invocation.
 
@@ -47,17 +51,17 @@ def get_filename_from_method(func, receiver):
     :attr func: the method's function object.
     :attr receiver: the first argument to the method, i.e. self or cls.
     """
- 
+
     mod_name = func.__module__
- 
+
     if inspect.isclass(receiver):
         class_name = receiver.__name__
     else:
         class_name = receiver.__class__.__name__
- 
+
     return "%s.%s.%s.yaml" % (mod_name, class_name, func.__name__)
- 
- 
+
+
 def _get_subcassette_filename(name, parent_filename):
     """Return a cassette namespaced by a parent cassette filename.
 
@@ -67,10 +71,10 @@ def _get_subcassette_filename(name, parent_filename):
     """
     parent_components = parent_filename.split('.')
     parent_components.insert(len(parent_components) - 1, name)
- 
+
     return '.'.join(parent_components)
- 
- 
+
+
 def get_namespace_cm(my_vcr, parent_filename, make_external_requests):
     """Return a context manager that uses a cassette namespaced under the parent.
 
@@ -89,13 +93,13 @@ def get_namespace_cm(my_vcr, parent_filename, make_external_requests):
                 'path': _get_subcassette_filename(name, parent_filename),
                 'match_on': match_on
             }
- 
+
             if match_on is None:
                 # vcr doesn't use a sentinel for match_on;
                 # it just shouldn't be present to default it.
                 del kwargs['match_on']
- 
+
             with my_vcr.use_cassette(**kwargs):
                 yield
- 
+
     return namespace_cm
