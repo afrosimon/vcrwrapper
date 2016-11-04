@@ -52,7 +52,7 @@ def external_call(*args, **kwargs):
     default_vcr_kwargs = {
         'cassette_library_dir': VCR_CASSETTE_PATH,
         'record_mode': RECORD_MODE,
-        'match_on': ('method', 'scheme', 'host', 'port', 'path'),
+        'match_on': ['method', 'scheme', 'host', 'port', 'path', 'json_query'],
         'filter_headers': ['authorization']
     }
 
