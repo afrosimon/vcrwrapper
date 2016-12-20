@@ -3,6 +3,30 @@ import logging
 import inspect
 import json
 
+try:
+    """
+    Ugly monkey patching regarding a problem between vcr.py and boto3
+    https://github.com/kevin1024/vcrpy/issues/283
+    """
+    from botocore.vendored.requests.packages.urllib3.connectionpool import HTTPSConnectionPool
+
+    def patched_prepare_conn(self, conn):
+        """
+        Got rid of a problematic isinstance check
+        """
+        conn.set_cert(key_file=self.key_file,
+                      cert_file=self.cert_file,
+                      cert_reqs=self.cert_reqs,
+                      ca_certs=self.ca_certs,
+                      assert_hostname=self.assert_hostname,
+                      assert_fingerprint=self.assert_fingerprint)
+        conn.ssl_version = self.ssl_version
+        return conn
+
+    HTTPSConnectionPool._prepare_conn = patched_prepare_conn
+except:
+    pass
+
 import vcr
 import sys
 
