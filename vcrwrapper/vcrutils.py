@@ -30,16 +30,11 @@ except:
 import vcr
 import sys
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
 
 def json_query_matcher(r1, r2):
     """
     Match two queries by decoding json-encoded query args and comparing them
     """
-    eprint('json_query_matcher')
-    eprint(r1.query)
-    eprint(r2.query)
     if len(r1.query) != len(r2.query):
         return False
 
